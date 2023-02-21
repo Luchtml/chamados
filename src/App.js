@@ -1,10 +1,12 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import RoutesApp from './routes/routes';
 
 const App = () => {
   return (
-    <div>
-      <h1>Teste</h1>
-    </div>
+    <BrowserRouter>
+      <RoutesApp />
+    </BrowserRouter>
   );
 };
 
