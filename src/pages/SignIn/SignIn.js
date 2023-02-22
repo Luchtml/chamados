@@ -1,33 +1,47 @@
-import React from 'react';
+import { useState, useContext } from 'react';
 import './signIn.css';
+
 import logo from '../../assets/logo.png';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../contexts/auth';
 
-const SignIn = () => {
-  const { email, setEmail } = React.useState('');
-  const { password, setPassword } = React.useState('');
+export default function SignIn() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const { signIn } = useContext(AuthContext);
+
+  function handleSignIn(e) {
+    e.preventDefault();
+
+    if (email !== '' && password !== '') {
+      signIn(email, password);
+    }
+  }
 
   return (
     <div className="container-center">
       <div className="login">
         <div className="login-area">
-          <img src={logo} alt="logo da pagina" />
+          <img src={logo} alt="Logo do sistema de chamados" />
         </div>
 
-        <form>
+        <form onSubmit={handleSignIn}>
           <h1>Entrar</h1>
           <input
             type="text"
             placeholder="email@email.com"
             value={email}
-            onChange={({ target }) => setEmail(target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
+
           <input
             type="password"
-            placeholder="**********"
+            placeholder="********"
             value={password}
-            onChange={({ target }) => setPassword(target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
+
           <button type="submit">Acessar</button>
         </form>
 
@@ -35,6 +49,4 @@ const SignIn = () => {
       </div>
     </div>
   );
-};
-
-export default SignIn;
+}
