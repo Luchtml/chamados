@@ -18,7 +18,7 @@ const SignIn = () => {
           <h1>Entrar</h1>
           <input
             type="text"
-            placeholder="email@emai.com"
+            placeholder="email@email.com"
             value={email}
             onChange={({ target }) => setEmail(target.value)}
           />
