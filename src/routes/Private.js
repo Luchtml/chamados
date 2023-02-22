@@ -1,9 +1,17 @@
-import React from 'react'
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/auth';
 
-const Private = () => {
-  return (
-    <div>Private</div>
-  )
-}
+const Private = ({ children }) => {
+  const { signed, loading } = React.useContext(AuthContext);
 
-export default Private
+  if (loading) {
+    return <div></div>;
+  }
+  if (!signed) {
+    return <Navigate to="/" />;
+  }
+  return children;
+};
+
+export default Private;

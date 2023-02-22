@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import React from 'react';
@@ -13,8 +14,21 @@ export const AuthContext = React.createContext({});
 function AuthProvider({ children }) {
   const [user, setUser] = React.useState(null);
   const [loadingAuth, setLoadingAuth] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    async function loadUser() {
+      const storageUser = localStorage.getItem('@tickets');
+      if (storageUser) {
+        setUser(JSON.parse(storageUser));
+        setLoading(false);
+      }
+      setLoading(false);
+    }
+    loadUser();
+  }, []);
 
   async function signIn(email, password) {
     setLoadingAuth(true);
@@ -78,6 +92,12 @@ function AuthProvider({ children }) {
     localStorage.setItem('@tickets', JSON.stringify(data));
   }
 
+  async function logout() {
+    await signOut(auth);
+    localStorage.removeItem('@tickets');
+    setUser(null);
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -85,7 +105,9 @@ function AuthProvider({ children }) {
         user,
         signIn,
         signUp,
+        logout,
         loadingAuth,
+        loading,
       }}
     >
       {children}
