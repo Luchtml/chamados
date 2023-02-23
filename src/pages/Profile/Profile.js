@@ -7,9 +7,28 @@ import avatar from '../../assets/avatar.png';
 import { AuthContext } from '../../contexts/auth';
 
 const Profile = () => {
-  const { user } = React.useContext(AuthContext);
+  const { user, storageUser, setUser, logout } = React.useContext(AuthContext);
 
   const [avatarUrl, setAvatarUrl] = React.useState(user && user.avatarUrl);
+  const [imageAvatar, setImageAvatar] = React.useState(null);
+
+  const [nome, setNome] = React.useState(user && user.nome);
+  const [email, setEmail] = React.useState(user && user.email);
+
+  function handleFile({ target }) {
+    if (target.files[0]) {
+      const image = target.files[0];
+
+      if (image.type === 'image/jpeg' || image.type === 'image/png') {
+        setImageAvatar(image);
+        setAvatarUrl(URL.createObjectURL(image));
+      } else {
+        alert('Envie uma imagem do tipo PNG ou JPEG');
+        setImageAvatar(null);
+        return;
+      }
+    }
+  }
 
   return (
     <div>
@@ -25,7 +44,8 @@ const Profile = () => {
               <span>
                 <FiUpload color="#FFF" size={25} />
               </span>
-              <input type="file" accept="image/*" /> <br />
+              <input type="file" accept="image/*" onChange={handleFile} />{' '}
+              <br />
               {avatarUrl === null ? (
                 <img
                   src={avatar}
@@ -43,18 +63,20 @@ const Profile = () => {
               )}
             </label>
             <label>Nome</label>
-            <input type="text" placeholder="Seu nome" />
-            <label>Email</label>
             <input
               type="text"
-              placeholder="SeuEmail@aqui.com"
-              disabled={true}
+              value={nome}
+              onChange={({ target }) => setNome(target.value)}
             />
+            <label>Email</label>
+            <input type="text" value={email} disabled={true} />
             <button type="submit">Salvar</button>
           </form>
         </div>
         <div className="container">
-          <button className="logout-btn">Sair</button>
+          <button className="logout-btn" onClick={() => logout()}>
+            Sair
+          </button>
         </div>
       </div>
     </div>
