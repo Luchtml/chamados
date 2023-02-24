@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Profile from '../pages/Profile/Profile';
-
+import Customers from '../pages/Customers/Customers';
 import SignIn from '../pages/SignIn/SignIn';
 import SignUp from '../pages/SignUp/SignUp';
 import Private from './Private';
@@ -24,6 +24,14 @@ function RoutesApp() {
         element={
           <Private>
             <Profile />
+          </Private>
+        }
+      />
+      <Route
+        path="/customers"
+        element={
+          <Private>
+            <Customers />
           </Private>
         }
       />
