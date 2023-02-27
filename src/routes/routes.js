@@ -5,6 +5,7 @@ import Customers from '../pages/Customers/Customers';
 import SignIn from '../pages/SignIn/SignIn';
 import SignUp from '../pages/SignUp/SignUp';
 import Private from './Private';
+import New from '../pages/New/New';
 
 function RoutesApp() {
   return (
@@ -32,6 +33,14 @@ function RoutesApp() {
         element={
           <Private>
             <Customers />
+          </Private>
+        }
+      />
+      <Route
+        path="/new"
+        element={
+          <Private>
+            <New />
           </Private>
         }
       />
