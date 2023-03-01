@@ -1,18 +1,94 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './new.css';
 import Title from '../../components/Title/Title';
 import Header from '../../components/Header/Header';
 import { FiPlusCircle } from 'react-icons/fi';
+import { AuthContext } from '../../contexts/auth';
+import { db } from '../../services/firebaseConnection';
+import { collection, doc, getDoc, getDocs, addDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
+
+const listRef = collection(db, 'customers');
 
 const New = () => {
+  const { user } = useContext(AuthContext);
+
   const [customers, setCustomers] = React.useState([]);
+  const [loadCustomer, setLoadCustomer] = React.useState(true);
+  const [customerSelected, setCustomerSelected] = React.useState(0);
 
   const [complemento, setComplemento] = React.useState('');
   const [assunto, setAssunto] = React.useState('Suporte');
   const [status, setStatus] = React.useState('Progresso');
 
+  React.useEffect(() => {
+    async function loadCustomers() {
+      const querySnapshot = await getDocs(listRef)
+        .then((snapshot) => {
+          let lista = [];
+
+          snapshot.forEach((doc) => {
+            lista.push({
+              id: doc.id,
+              nomeFantasia: doc.data().nomeFantasia,
+            });
+          });
+
+          if (snapshot.docs.size === 0) {
+            console.log('nenhuma empresa encontrada');
+            setCustomers([{ id: '1', nomeFantasia: 'FREELA' }]);
+            setLoadCustomer(false);
+            return;
+          }
+
+          setCustomers(lista);
+          setLoadCustomer(false);
+        })
+        .catch((error) => {
+          console.log(error + '-erro ao buscar os clientes');
+          setLoadCustomer(false);
+          setCustomers([{ id: '1', nomeFantasia: 'FREELA' }]);
+        });
+    }
+    loadCustomers();
+  }, []);
+
   function handleOptionChange({ target }) {
     setStatus(target.value);
+  }
+
+  function handleChangeSelect({ target }) {
+    setAssunto(target.value);
+    console.log(target.value);
+  }
+
+  function handleChangeCustomer({ target }) {
+    setCustomerSelected(target.value);
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+
+    //Registrar Chamado
+
+    await addDoc(collection(db, 'chamados'), {
+      created: new Date(),
+      cliente: customers[customerSelected].nomeFantasia,
+      clienteId: customers[customerSelected].id,
+      assunto: assunto,
+      complemento: complemento,
+      status: status,
+      userId: user.uid,
+    })
+      .then(() => {
+        toast.success('Chamado Registrado');
+        setComplemento('');
+        setCustomerSelected(0);
+      })
+      .catch((error) => {
+        toast.error('Ops, erro ao registrar, tente novamente!');
+        console.log(error);
+      });
   }
 
   return (
@@ -24,18 +100,24 @@ const New = () => {
         </Title>
 
         <div className="container">
-          <form className="form-profile">
+          <form className="form-profile" onSubmit={handleRegister}>
             <label>Clientes</label>
-            <select>
-              <option value="1" key={1}>
-                Mercado Teste
-              </option>
-              <option value="2" key={2}>
-                Mercado Informatica
-              </option>
-            </select>
+            {loadCustomer ? (
+              <input type="text" disabled={true} value="Carregando..." />
+            ) : (
+              <select value={customerSelected} onChange={handleChangeCustomer}>
+                {customers.map((item, index) => {
+                  return (
+                    <option value={index} key={index}>
+                      {item.nomeFantasia}
+                    </option>
+                  );
+                })}
+              </select>
+            )}
+
             <label>Assunto</label>
-            <select>
+            <select value={assunto} onChange={handleChangeSelect}>
               <option value="Suporte">Suporte</option>
               <option value="Visita Tecnica">Visita Tecnica</option>
               <option value="Financeiro">Financeiro</option>
