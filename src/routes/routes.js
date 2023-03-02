@@ -7,7 +7,6 @@ import SignUp from '../pages/SignUp/SignUp';
 import Private from './Private';
 import New from '../pages/New/New';
 
-
 function RoutesApp() {
   return (
     <Routes>
@@ -39,6 +38,14 @@ function RoutesApp() {
       />
       <Route
         path="/new"
+        element={
+          <Private>
+            <New />
+          </Private>
+        }
+      />
+      <Route
+        path="/new/:id"
         element={
           <Private>
             <New />

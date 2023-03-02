@@ -7,11 +7,13 @@ import { AuthContext } from '../../contexts/auth';
 import { db } from '../../services/firebaseConnection';
 import { collection, doc, getDoc, getDocs, addDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
 const listRef = collection(db, 'customers');
 
 const New = () => {
   const { user } = useContext(AuthContext);
+  const { id } = useParams();
 
   const [customers, setCustomers] = React.useState([]);
   const [loadCustomer, setLoadCustomer] = React.useState(true);
@@ -20,6 +22,7 @@ const New = () => {
   const [complemento, setComplemento] = React.useState('');
   const [assunto, setAssunto] = React.useState('Suporte');
   const [status, setStatus] = React.useState('Progresso');
+  const [idCustomer, setIdCustomer] = React.useState(false);
 
   React.useEffect(() => {
     async function loadCustomers() {
@@ -43,6 +46,10 @@ const New = () => {
 
           setCustomers(lista);
           setLoadCustomer(false);
+
+          if (id) {
+            loadId(lista);
+          }
         })
         .catch((error) => {
           console.log(error + '-erro ao buscar os clientes');
@@ -51,7 +58,27 @@ const New = () => {
         });
     }
     loadCustomers();
-  }, []);
+  }, [id]);
+
+  async function loadId(lista) {
+    const docRef = doc(db, 'chamados', id);
+    await getDoc(docRef)
+      .then((snapshot) => {
+        setAssunto(snapshot.data().assunto);
+        setStatus(snapshot.data().status);
+        setComplemento(snapshot.data().complemento);
+
+        let index = lista.findIndex(
+          (item) => item.id === snapshot.data().clienteId,
+        );
+        setCustomerSelected(index);
+        setIdCustomer(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIdCustomer(false);
+      });
+  }
 
   function handleOptionChange({ target }) {
     setStatus(target.value);
@@ -68,6 +95,11 @@ const New = () => {
 
   async function handleRegister(e) {
     e.preventDefault();
+
+    if (idCustomer) {
+      alert('Editando Chamado');
+      return;
+    }
 
     //Registrar Chamado
 
