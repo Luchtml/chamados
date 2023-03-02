@@ -21,7 +21,10 @@ const listRef = collection(db, 'chamados');
 const Dashboard = () => {
   const [chamados, setChamados] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+
   const [isEmpty, setIsEmpty] = React.useState(false);
+  const [lastDocs, setLastDocs] = React.useState();
+  const [loadingMore, setLoadingMore] = React.useState(false);
 
   const { logout } = useContext(AuthContext);
 
@@ -62,6 +65,9 @@ const Dashboard = () => {
         });
       });
       setChamados((chamados) => [...chamados, ...lista]);
+
+      
+
     } else {
       setIsEmpty(true);
     }
