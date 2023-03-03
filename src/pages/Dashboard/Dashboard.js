@@ -27,6 +27,9 @@ const Dashboard = () => {
   const [lastDocs, setLastDocs] = React.useState();
   const [loadingMore, setLoadingMore] = React.useState(false);
 
+  const [showPostModal, setShowPostModal] = React.useState(false);
+  const [detail, setDetail] = React.useState();
+
   const { logout } = useContext(AuthContext);
 
   React.useEffect(() => {
@@ -89,6 +92,11 @@ const Dashboard = () => {
     );
     const querySnapshot = await getDocs(q);
     await updateState(querySnapshot);
+  }
+
+  function toggleModal(item) {
+    setShowPostModal(!showPostModal);
+    setDetail(item);
   }
 
   if (loading) {
@@ -160,6 +168,7 @@ const Dashboard = () => {
                           <button
                             className="action"
                             style={{ backgroundColor: '#3583f6' }}
+                            onClick={() => toggleModal(item)}
                           >
                             <FiSearch color="#FFF" size={17} />
                           </button>
@@ -187,8 +196,12 @@ const Dashboard = () => {
           )}
         </>
       </div>
-
-      <Modal />
+      {showPostModal && (
+        <Modal
+          conteudo={detail}
+          close={() => setShowPostModal(!showPostModal)}
+        />
+      )}
     </div>
   );
 };
