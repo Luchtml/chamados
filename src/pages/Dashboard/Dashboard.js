@@ -15,6 +15,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../services/firebaseConnection';
 import { format } from 'date-fns';
+import Modal from '../../components/Modal/Modal';
 
 const listRef = collection(db, 'chamados');
 
@@ -186,6 +187,8 @@ const Dashboard = () => {
           )}
         </>
       </div>
+
+      <Modal />
     </div>
   );
 };
